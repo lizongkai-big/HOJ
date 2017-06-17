@@ -1,0 +1,110 @@
+#include<stdio.h>
+#include<string.h>
+#define N 8
+
+char layout[N][N];
+int n, m;
+int t;
+int si = 0, sj = 0;
+int di = 0, dj = 0;
+int next[4][2] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
+int flag = 0;
+int find(int i, int j, int sec){
+    printf("i = %d, j = %d, t = %d\n", i, j, sec);
+    for(int a = 1; a <= n; a ++){
+        for(int b = 1; b <= m; b ++){
+            printf("%c\t", layout[a][b]);
+        }
+        printf("\n");
+    }
+    if(i == di && j == dj && sec == 0){//正好的时间找到目标
+        flag = 1;
+    }
+    if(flag)
+    {
+        printf("success\n");
+        return 0;
+    }
+    if(i < 1 || i > n || j < 1 || j > m){
+        printf("越界\n");
+        return 0;//越界
+    }
+    int s1 = di - i;
+    s1 = s1 > 0 ? s1 : -s1;
+    int s2 = dj - j;
+    s2 = s2 > 0 ? s2 : -s2;
+    int tem = sec - s1 - s2;
+    if(tem < 0 || tem % 2 != 0){
+        printf("走的距离不合适\n");        
+        return 0;//如果要走的距离（最小值）大于步数 || 要走的步数与时间不能同时到达
+    }
+    puts("-----");
+    for(int k = 0; k < 4 && flag == 0   ; k ++){//有可能走过去，就尝试四个方向
+        int x = i + next[k][0];
+        int y = j + next[k][1];
+        printf("i = %d, j = %d\n", next[k][0], next[k][1]);
+        printf("x = %d, y = %d, %c\n", x, y, layout[x][y]);
+        if(layout[x][y] != 'X'){//可以走
+            layout[x][y] = 'X';
+            printf("进一层\n");
+            find(x, y, sec - 1);
+            printf("跳出\n");
+            layout[x][y] = '.';
+        }
+    }
+}
+int main(){
+    while(scanf("%d%d", &n, &m) && scanf("%d", &t) && n != 0){
+        memset(layout, 0, sizeof(layout));
+        si = 0, sj = 0;
+        di = 0, dj = 0;
+        flag = 0;
+        int wall = 0;
+        for(int i = 1; i <= n; i ++){
+            getchar();
+            for(int j = 1; j <= m; j ++){
+                scanf("%c", &layout[i][j]);
+                if(layout[i][j] == 'S'){
+                    si = i;
+                    sj = j;
+                }
+                if(layout[i][j] == 'D'){
+                    di = i;
+                    dj = j;
+                }
+                if(layout[i][j] == 'X'){
+                    wall ++;
+                }
+            }
+        }
+        getchar();
+        if(n * m < t + wall){
+            printf("NO\n");
+            continue;
+        }
+        for(int i = 1; i <= n; i ++){
+            for(int j = 1; j <= m; j ++){
+                printf("%c\t", layout[i][j]);
+            }
+            printf("\n");
+        }
+        layout[si][sj] = 'X';
+        find(si, sj, t);
+        if(flag == 0)
+            printf("NO\n");
+        else if(flag == 1)
+            printf("YES\n");
+        //count the second, and find the Door, make a block tobe a wall
+        //if(second > t), return last step, make the wall tobe block
+        //if(find the Door), printf("YES")
+    }
+}
+
+/*
+要深度搜索，因为不知道哪个位置才有出路；
+四个方向用一个二维数组来帮助实现；
+要判断出界;
+要在一开始就判断能否找出一条路径出去，也就是使步数加墙数必须小于总格子数；
+最重要的是利用走的步数的奇偶性来剪枝；http://blog.csdn.net/nvliba/article/details/48532709
+注意：题意是在且只在第 n 秒，出口才会打开，dog才能出去
+*/
