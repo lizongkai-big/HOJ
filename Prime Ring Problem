@@ -1,0 +1,75 @@
+#include<stdio.h>
+#define N 20
+bool IsPrime[40];
+int n;
+int NumRes[20];
+bool IsSet[20];
+void SetPrime();
+void Dfs(int site, int num){//在NumArr里的site位置放下num
+printf("site = %d, num = %d\n", site, num);
+    if(site != n){//与前一个数NumRes[site]相加        
+        int temp = NumRes[site - 1] + num;
+printf("temp = %d\n", temp);
+        if(IsPrime[temp]){//可以放下
+printf("TRUE\n");
+            NumRes[site] = num;
+            IsSet[num] = true;
+            int nextNum;
+            for(int i = 1; i <= n; i ++){
+                if(IsSet[i] == false){
+                    nextNum = i;
+                    printf("nextNum = %d\n", nextNum);
+                    Dfs(site + 1, nextNum);//往下一个位置放数
+                }
+            }
+            printf("可以放，但不neng放%d\n", num);
+            IsSet[num] = false;
+            //可以放，但不放
+        }
+        else printf("FALSE\n");
+    }
+    else{
+
+        int temp1 = NumRes[site - 1] + num;
+        int temp2 = num + 1;
+printf("temp1 = %d, temp2 = %d\n", temp1, temp2);
+        if(IsPrime[temp1] && IsPrime[temp2]){//可以放下
+printf("TRUE\n");
+            NumRes[site] = num;
+            IsSet[num] = true;
+puts("***************************************************");
+            for(int i = 1; i <= n; i ++){
+                printf("%d ", NumRes[i]);
+            }
+            printf("\n");
+            IsSet[num] = false;
+        }
+        else printf("FALSE\n");
+    }
+}
+
+
+int main(){
+    SetPrime();
+    while(scanf("%d", &n) != EOF){
+        //Initial
+        for(int i = 1; i < N; i ++){
+            IsSet[i] = false;
+        }
+        Dfs(1, 1);
+    }
+}
+
+
+void SetPrime(){
+    for(int i = 1; i < 40; i ++){//2 - 40
+        IsPrime[i] = true;
+        for(int j = 2; j < i; j ++){
+            if(i % j == 0){
+                IsPrime[i] = false;
+                break;
+            }
+        }
+//        printf("%d, %d\n", i, IsPrime[i]);
+    }
+}
