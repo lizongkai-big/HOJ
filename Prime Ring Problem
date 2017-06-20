@@ -52,6 +52,9 @@ puts("***************************************************");
 int main(){
     SetPrime();
     while(scanf("%d", &n) != EOF){
+        if(n & 1){//根据鸽巢原理，奇数是不存在奇数环的（因为总会有两个奇数相邻）
+            continue;
+        }
         //Initial
         for(int i = 1; i < N; i ++){
             IsSet[i] = false;
@@ -73,3 +76,6 @@ void SetPrime(){
 //        printf("%d, %d\n", i, IsPrime[i]);
     }
 }
+
+//剪枝
+//http://blog.csdn.net/lishuhuakai/article/details/8014971
